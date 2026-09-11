@@ -1,0 +1,14 @@
+flowchart TD
+  START([DSR 到达门店]) --> WAY{如何进入}
+  WAY -->|新管 / 未管过| CAM[拍照识店]
+  WAY -->|管过的店| HIST[历史门店]
+  CAM --> BOARD[进入该店销售看板]
+  HIST --> BOARD
+  BOARD --> SEE[看标签 / 平台订单 / Top / 机制]
+  SEE --> GEN[点击生成运营建议]
+  GEN --> AI[AI 按供给→动销→机制→补贴判断]
+  AI --> VOTE{采纳或忽略}
+  VOTE -->|采纳| HQ[记入上报总部<br/>可计划 / 可配券]
+  VOTE -->|忽略| KEEP[不进入计划]
+  HQ --> END([可回看历史建议])
+  KEEP --> END

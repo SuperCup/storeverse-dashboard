@@ -1,0 +1,14 @@
+sequenceDiagram
+  actor DSR as DSR
+  participant App as 手机端
+  participant Board as 销售看板
+  participant AI as 建议引擎
+  participant HQ as 总部监控
+
+  DSR->>App: 拍照或打开历史门店
+  App->>Board: 展示标签、平台订单、Top、机制
+  DSR->>Board: 点击生成运营建议
+  Board->>AI: 供给→动销→机制→补贴
+  AI->>App: 运营建议列表
+  DSR->>App: 采纳或忽略
+  App->>HQ: 回写生成记录与采纳结果

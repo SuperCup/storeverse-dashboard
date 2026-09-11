@@ -1,0 +1,38 @@
+flowchart TB
+  subgraph L1["一层 · 一线触达"]
+    APP["StoreVerse 手机端<br/>DSR 主路径 / 总部监控 / 导购后续"]
+  end
+
+  subgraph L2["二层 · 进店"]
+    PHOTO["拍照识店<br/>新管或未管过的门"]
+    HIST["历史门店"]
+  end
+
+  subgraph L3["三层 · 销售看板"]
+    TAG["周边 1-3km 标签"]
+    PLAT["微信 / 京东到家 / 美团闪购"]
+    TOP["Top 商品"]
+    MECH["机制效果"]
+  end
+
+  subgraph L4["四层 · AI 运营指导"]
+    GEN["点击生成运营建议"]
+    CHAIN["供给 → 动销 → 机制 → 补贴"]
+    VOTE["采纳 / 忽略"]
+  end
+
+  subgraph L5["五层 · 总部"]
+    HQ["DSR 使用监控<br/>到店 / 报告 / 采纳"]
+  end
+
+  APP --> PHOTO
+  APP --> HIST
+  PHOTO --> TAG
+  HIST --> TAG
+  TAG --> PLAT
+  PLAT --> TOP
+  TOP --> MECH
+  MECH --> GEN
+  GEN --> CHAIN
+  CHAIN --> VOTE
+  VOTE --> HQ

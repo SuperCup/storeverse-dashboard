@@ -1,0 +1,39 @@
+flowchart LR
+  CID["StoreVerse 门店 ID"]
+
+  subgraph SRC["数据域"]
+    POI["周边 1-3km"]
+    WX["微信支付订单/补贴"]
+    JD["京东到家"]
+    MT["美团闪购"]
+    SKU["Top 商品"]
+    MECH["机制与预算"]
+  end
+
+  subgraph MID["看板"]
+    TAG["门店标签"]
+    FACT["销售事实"]
+  end
+
+  subgraph OUT["AI 建议"]
+    GEN["生成运营建议"]
+    VOTE["采纳 / 忽略"]
+    HQ["总部监控"]
+  end
+
+  CID --> POI
+  CID --> WX
+  CID --> JD
+  CID --> MT
+  CID --> SKU
+  CID --> MECH
+  POI --> TAG
+  WX --> FACT
+  JD --> FACT
+  MT --> FACT
+  SKU --> FACT
+  MECH --> FACT
+  TAG --> GEN
+  FACT --> GEN
+  GEN --> VOTE
+  VOTE --> HQ

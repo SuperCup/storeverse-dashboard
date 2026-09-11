@@ -1,0 +1,8 @@
+flowchart TD
+  START([导购上班 / 店内需要推荐]) --> BIND[进入已绑定的我的门店<br/>Connect ID 无需每次拍照]
+  BIND --> FACT[展示昨日销量趋势<br/>热销 SKU 排名 / 当前活动效果]
+  FACT --> TAG[读取门店画像与标签<br/>如社区型、家庭客群、活动类型]
+  TAG --> PUSH[生成今日主推<br/>SKU + 券 + 话术 + 原因]
+  PUSH --> SHOW[手机端展示答案]
+  SHOW --> ACT[导购按建议推券 / 推荐商品]
+  ACT --> END([当场销售动作完成])
