@@ -2,7 +2,7 @@ export type Role = "dsr" | "hq" | "guide";
 
 export type TimeRange = "d1" | "d7" | "d30";
 
-/** 渠道：到店 / 到家。永辉样例门店到店能力标签多为否，到店档会走空态。 */
+/** 渠道：到店 / 到家。本片区门店到店能力标签多为否，到店档会走空态。 */
 export type Channel = "instore" | "home";
 
 export type AdviceKind = "supply" | "mechanism" | "price" | "season";
@@ -79,7 +79,7 @@ export type Store = {
   bestMechHome: string;
   nearby: string;
   nearbyDetail: string;
-  /** 1KM / 3KM 周边业态数量。有无沿用真实标签，数量为演示估算。 */
+  /** 1KM / 3KM 周边业态数量。有无沿用周边标签，数量按检索结果汇总。 */
   poiCounts: PoiCount[];
   slices: Record<TimeRange, SalesSlice>;
   advices: AiAdvice[];

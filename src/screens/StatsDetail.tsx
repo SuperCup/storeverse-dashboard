@@ -99,7 +99,7 @@ export function StatsDetail({
       </div>
 
       <div className="connect">
-        访店记录来自本机演示会话，销售与补贴口径为 StoreVerse 归一门店近 30 天实数按昨日折算。
+        访店记录来自当前账号会话，销售与补贴口径为 StoreVerse 归一门店近 30 天实数按昨日折算。
       </div>
     </div>
   );

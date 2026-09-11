@@ -3,7 +3,7 @@ import { ACCOUNT } from "../data/account";
 
 export function Login({ onLogin }: { onLogin: () => void }) {
   const [id, setId] = useState(ACCOUNT.loginId);
-  const [pwd, setPwd] = useState("demo1234");
+  const [pwd, setPwd] = useState("smartgo123");
   const [submitting, setSubmitting] = useState(false);
 
   const disabled = !id.trim() || !pwd.trim() || submitting;
@@ -53,13 +53,10 @@ export function Login({ onLogin }: { onLogin: () => void }) {
           <button className="gen-btn" style={{ marginTop: 4 }} onClick={submit} disabled={disabled}>
             {submitting ? "登录中…" : "登录"}
           </button>
-          <div className="empty-note" style={{ textAlign: "center" }}>
-            演示环境已预填工号与密码，直接点登录即可。
-          </div>
         </div>
       </div>
 
-      <div className="connect login-foot">演示环境不做真实鉴权，登录信息仅用于展示当前用户的片区数据。</div>
+      <div className="connect login-foot">登录后展示当前账号所属片区的门店与经营事实。</div>
     </div>
   );
 }

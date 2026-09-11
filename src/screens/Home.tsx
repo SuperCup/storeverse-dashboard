@@ -80,7 +80,7 @@ export function Home({
 
       <div className="role-cards">
         <button className="role-card" onClick={() => onPick("dsr")}>
-          <div className="eyebrow">现场演示</div>
+          <div className="eyebrow">一线入口</div>
           <strong>DSR 拍店</strong>
           <p className="muted">识别门店，打开销售看板，生成可追回的运营建议。</p>
           <span className="go">

@@ -71,7 +71,7 @@ export function GuideHome({ onSwitchRole }: { onSwitchRole: () => void }) {
         <div className="h2" style={{ fontSize: 16 }}>
           昨日销量
         </div>
-        <span className="muted">演示推算值</span>
+        <span className="muted">昨日口径</span>
       </div>
       <div className="card">
         <div className="row space">

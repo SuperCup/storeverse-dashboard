@@ -48,13 +48,13 @@ export function CameraCapture({
           <i className="br" />
         </div>
         <div className="hud-chip" style={{ top: 16, left: 14 }}>
-          29.533°N 106.573°E
+          23.133°N 113.327°E
         </div>
         <div className="hud-chip" style={{ top: 16, right: 14 }}>
           ±8m
         </div>
         <div className="hud-chip" style={{ bottom: 16, left: 14 }}>
-          南岸万达 门头
+          天娱广场 门头
         </div>
         {scanning && <div className="scan-beam" />}
         {scanning && (

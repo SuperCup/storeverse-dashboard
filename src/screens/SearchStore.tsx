@@ -42,13 +42,13 @@ export function SearchStore({
       </p>
       <input
         className="search-box"
-        placeholder="搜索南岸万达、小寨、西城都荟…"
+        placeholder="搜索天娱、西城都荟、丽影…"
         value={q}
         onChange={(e) => setQ(e.target.value)}
       />
       {list.length === 0 && (
         <p className="empty-note" style={{ marginTop: 16 }}>
-          没有匹配的归一门店。可试试「南岸」「西城」「小寨」或 sg_store_id。
+          没有匹配的归一门店。可试试「天娱」「西城」「丽影」或 sg_store_id。
         </p>
       )}
       <div className="stack" style={{ marginTop: 14 }}>

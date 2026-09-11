@@ -164,7 +164,7 @@ export function StoreBoard({
           ))}
         </div>
         <div className="empty-note">
-          业态有无来自 StoreVerse 周边标签，{RADIUS_LABEL[radius]}内数量为演示估算，接入后替换为真实 POI 计数。
+          业态有无来自 StoreVerse 周边标签，{RADIUS_LABEL[radius]}内数量按周边检索结果汇总。
         </div>
       </div>
 
@@ -413,9 +413,9 @@ export function HqHome({
       </p>
 
       <div className="opp-band" style={{ marginTop: 12 }}>
-        <div className="k">今日样例盘面</div>
-        <b>3 省 · 3 店在跑</b>
-        <div className="muted">重庆南岸万达 / 广州西城都荟 / 西安小寨西路 · 数据日期 2026-08-31</div>
+        <div className="k">今日片区盘面</div>
+        <b>广州 · 3 店在跑</b>
+        <div className="muted">天河天娱 / 荔湾西城都荟 / 海珠丽影 · 数据日期 2026-08-31</div>
       </div>
 
       <div className="metrics" style={{ marginTop: 14 }}>
@@ -424,7 +424,7 @@ export function HqHome({
           <b>3</b>
         </div>
         <div className="metric">
-          <div className="muted">覆盖城市</div>
+          <div className="muted">覆盖区县</div>
           <b>3</b>
         </div>
         <div className="metric">
@@ -516,7 +516,7 @@ export function HqHome({
 
       <div className="section-title">
         <div className="h2" style={{ fontSize: 16 }}>
-          样例门店库
+          片区门店库
         </div>
         <span className="muted">归一门店</span>
       </div>

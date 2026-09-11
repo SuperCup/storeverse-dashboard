@@ -18,7 +18,7 @@ export function DsrHome({
     <div className="screen">
       <div className="app-header">
         <div>
-          <div className="eyebrow cn">DSR · 高宇 · 重庆片区</div>
+          <div className="eyebrow cn">DSR · smartgo · 广州片区</div>
           <div className="brand" style={{ fontSize: 22, marginTop: 4 }}>
             StoreVerse
           </div>

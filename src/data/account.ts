@@ -1,10 +1,10 @@
 import type { Account, Channel, ChannelSummary, VisitRecord } from "../types";
 
 export const ACCOUNT: Account = {
-  name: "高宇",
-  loginId: "gaoyu",
+  name: "smartgo",
+  loginId: "smartgo",
   role: "DSR",
-  region: "重庆片区",
+  region: "广州片区",
   dataDate: "2026-08-31",
 };
 
@@ -13,32 +13,32 @@ export const CHANNELS: { id: Channel; label: string }[] = [
   { id: "instore", label: "到店" },
 ];
 
-/** 到家为样例实数汇总；到店走空态——永辉样例门店的到店能力标签均为否。 */
+/** 到家为广州片区实数汇总；到店走空态——本片区门店到店能力标签均为否。 */
 export const CHANNEL_SUMMARY: Record<Channel, ChannelSummary> = {
   home: {
     visits: "3",
-    gmv: "¥18,420",
-    subsidy: "¥2,860",
-    roi: "6.44",
+    gmv: "¥20,220",
+    subsidy: "¥2,391",
+    roi: "8.46",
   },
   instore: {
     visits: "3",
     gmv: "—",
     subsidy: "—",
     roi: "—",
-    emptyNote: "本片区 3 家样例门店的到店能力标签均为「否」，暂无到店活动与补贴事实。",
+    emptyNote: "本片区 3 家门店的到店能力标签均为「否」，暂无到店活动与补贴事实。",
   },
 };
 
 export const VISIT_RECORDS: Record<Channel, VisitRecord[]> = {
   home: [
     {
-      storeId: "yh-nanan-wanda",
+      storeId: "yh-tianyu",
       time: "10:18",
       action: "拍照识店 → 看板",
-      gmv: "¥6,180",
-      subsidy: "¥1,050",
-      roi: "5.87",
+      gmv: "¥6,420",
+      subsidy: "¥616",
+      roi: "10.42",
     },
     {
       storeId: "yh-xicheng-duhui",
@@ -49,17 +49,17 @@ export const VISIT_RECORDS: Record<Channel, VisitRecord[]> = {
       roi: "8.15",
     },
     {
-      storeId: "yh-xiaozhai",
+      storeId: "yh-liying",
       time: "09:40",
       action: "历史门店进入",
-      gmv: "¥4,300",
-      subsidy: "¥840",
-      roi: "6.84",
+      gmv: "¥5,860",
+      subsidy: "¥805",
+      roi: "7.28",
     },
   ],
   instore: [
     {
-      storeId: "yh-nanan-wanda",
+      storeId: "yh-tianyu",
       time: "10:18",
       action: "拍照识店 → 看板",
       gmv: "—",
@@ -75,7 +75,7 @@ export const VISIT_RECORDS: Record<Channel, VisitRecord[]> = {
       roi: "—",
     },
     {
-      storeId: "yh-xiaozhai",
+      storeId: "yh-liying",
       time: "09:40",
       action: "历史门店进入",
       gmv: "—",
