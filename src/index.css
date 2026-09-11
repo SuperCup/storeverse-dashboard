@@ -934,6 +934,103 @@ input:focus-visible {
   color: var(--muted);
 }
 
+.kv-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.poi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.poi-grid .metric {
+  border-radius: 14px;
+  padding: 10px;
+}
+
+.poi-grid .metric .muted {
+  font-size: 11px;
+}
+
+.poi-grid .metric b {
+  font-size: 22px;
+}
+
+.login {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-brand {
+  margin-bottom: 22px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+}
+
+.field {
+  display: block;
+}
+
+.field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.login-foot {
+  padding-top: 24px;
+  text-align: center;
+}
+
+.stat-card {
+  padding: 16px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+}
+
+.link-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.detail-row {
+  width: 100%;
+  text-align: left;
+}
+
 .vote.up {
   background: var(--forest-soft);
   color: var(--forest);

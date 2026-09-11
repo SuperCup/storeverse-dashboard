@@ -1,15 +1,24 @@
 import { useEffect, useState } from "react";
-import { ADVICE_KIND_LABEL, HQ_SEED_VISITS, STORES, TIME_RANGES, getStore } from "../data/stores";
+import {
+  ADVICE_KIND_LABEL,
+  HQ_SEED_VISITS,
+  RADIUS_OPTIONS,
+  STORES,
+  TIME_RANGES,
+  getStore,
+} from "../data/stores";
 import { IconBack, IconCheck, IconClose } from "../icons";
-import type { AdviceReport, Store, TimeRange } from "../types";
+import type { AdviceReport, Radius, Store, TimeRange } from "../types";
 
 const GEN_STEPS = ["检查供给：有没有货", "检查动销：卖得好不好", "检查机制：投得对不对", "检查补贴：预算够不够"];
 
 const RANGE_NOTE: Record<TimeRange, string> = {
-  d1: "昨日口径 · 由近30天推算",
-  d7: "近 7 天口径 · 由近30天推算",
+  d1: "昨日口径 · 由近 30 天推算",
+  d7: "近 7 天口径 · 由近 30 天推算",
   d30: "近 30 天 · 标签实数",
 };
+
+const RADIUS_LABEL: Record<Radius, string> = { r1: "1KM", r3: "3KM" };
 
 const ADVICE_KIND_TAG: Record<string, string> = {
   supply: "tag forest",
@@ -73,6 +82,7 @@ export function StoreBoard({
   onOpenReport: (reportId: string) => void;
 }) {
   const [range, setRange] = useState<TimeRange>("d30");
+  const [radius, setRadius] = useState<Radius>("r1");
   const slice = store.slices[range];
   const storeReports = reports.filter((item) => item.storeId === store.id);
 
@@ -110,25 +120,12 @@ export function StoreBoard({
               <i /> {platform}
             </span>
           ))}
+          {store.platformsUncovered.map((platform) => (
+            <span className="live-pill off" key={platform}>
+              {platform} 未覆盖
+            </span>
+          ))}
           <span className="live-pill">sg_store_id {store.sgStoreId}</span>
-        </div>
-        <div className="metrics" style={{ marginTop: 12 }}>
-          <div className="metric">
-            <div className="muted">到家 ROI</div>
-            <b>{store.roiHome}</b>
-          </div>
-          <div className="metric">
-            <div className="muted">到家笔单价</div>
-            <b>{store.aovHome}</b>
-          </div>
-          <div className="metric">
-            <div className="muted">在售 SKU</div>
-            <b>{store.skuSupply}</b>
-          </div>
-          <div className="metric">
-            <div className="muted">最优机制</div>
-            <b className="text">{store.bestMechHome}</b>
-          </div>
         </div>
         <div className="opp-band">
           <div className="k">本店抓手</div>
@@ -139,23 +136,36 @@ export function StoreBoard({
 
       <div className="section-title">
         <div className="h2" style={{ fontSize: 16 }}>
-          周边 POI 标签
+          门店标签
         </div>
-        <span className="muted">近 90 天</span>
+        <span className="muted">周边业态</span>
+      </div>
+      <div className="tabs">
+        {RADIUS_OPTIONS.map((item) => (
+          <button
+            key={item.id}
+            className={`tab${radius === item.id ? " on" : ""}`}
+            onClick={() => setRadius(item.id)}
+          >
+            {item.label}
+          </button>
+        ))}
       </div>
       <div className="card">
         <div className="muted" style={{ marginBottom: 10 }}>
           {store.nearby}
         </div>
-        {store.pois.map((poi) => (
-          <div className="sku-line" key={`${poi.kind}-${poi.name}`}>
-            <div>
-              <b>{poi.name}</b>
-              <div className="muted">{poi.kind}</div>
+        <div className="poi-grid">
+          {store.poiCounts.map((poi) => (
+            <div className="metric" key={poi.key}>
+              <div className="muted">{poi.label}</div>
+              <b>{poi[radius]}</b>
             </div>
-            <span className="tag">{poi.distance}</span>
-          </div>
-        ))}
+          ))}
+        </div>
+        <div className="empty-note">
+          业态有无来自 StoreVerse 周边标签，{RADIUS_LABEL[radius]}内数量为演示估算，接入后替换为真实 POI 计数。
+        </div>
       </div>
 
       <div className="section-title">
@@ -183,7 +193,7 @@ export function StoreBoard({
 
       <div className="section-title">
         <div className="h2" style={{ fontSize: 16 }}>
-          到家平台能力
+          活动统计
         </div>
         <span className="muted">{RANGE_NOTE[range]}</span>
       </div>
@@ -199,33 +209,32 @@ export function StoreBoard({
         ))}
       </div>
       <div className="stack">
-        {slice.platforms.map((platform) => (
-          <div className={`card plat ${platform.id}${platform.capability ? "" : " off"}`} key={platform.id}>
+        {slice.campaigns.map((item) => (
+          <div className="card plat" key={item.id}>
             <div className="row space">
-              <b>{platform.name}</b>
-              <span className={platform.capability ? "tag forest" : "tag"}>
-                {platform.capability ? "已覆盖" : "未覆盖"}
-              </span>
+              <b>{item.name}</b>
+              <span className={MECH_STATUS[item.status].cls}>{MECH_STATUS[item.status].label}</span>
             </div>
-            {platform.capability ? (
-              <>
-                <div className="metrics" style={{ marginTop: 10 }}>
-                  <div className="kv">
-                    <div className="k">订单表现</div>
-                    <span className="v">{platform.orders}</span>
-                  </div>
-                  <div className="kv">
-                    <div className="k">机制 / ROI</div>
-                    <span className="v">
-                      {platform.gmv} · {platform.subsidy}
-                    </span>
-                  </div>
-                </div>
-                {platform.note && <div className="empty-note">{platform.note}</div>}
-              </>
-            ) : (
-              <div className="empty-note">本店该平台到家能力标签为「否」，无可用经营事实。</div>
-            )}
+            <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
+              {item.platform} · {item.days}
+            </div>
+            <div className="kv-row">
+              <div className="kv">
+                <div className="k">活动 GMV</div>
+                <span className="v">{item.gmv}</span>
+              </div>
+              <div className="kv">
+                <div className="k">补贴</div>
+                <span className="v">{item.subsidy}</span>
+              </div>
+              <div className="kv">
+                <div className="k">ROI</div>
+                <span className="v">{item.roi}</span>
+              </div>
+            </div>
+            <div className="reason" style={{ marginTop: 10 }}>
+              {item.note}
+            </div>
           </div>
         ))}
       </div>
@@ -249,29 +258,6 @@ export function StoreBoard({
               {sku.note && <div className="muted">{sku.note}</div>}
             </div>
             <span className="tag accent">{sku.sku}</span>
-          </div>
-        ))}
-      </div>
-
-      <div className="section-title">
-        <div className="h2" style={{ fontSize: 16 }}>
-          机制效果
-        </div>
-      </div>
-      <div className="stack">
-        {slice.mechanisms.map((mech) => (
-          <div className="card" key={mech.name}>
-            <div className="row space">
-              <b>{mech.name}</b>
-              <span className={MECH_STATUS[mech.status].cls}>{MECH_STATUS[mech.status].label}</span>
-            </div>
-            <p className="muted" style={{ marginTop: 6 }}>
-              {mech.gmvShare} · {mech.subsidyShare}
-            </p>
-            <p className="muted">{mech.days}</p>
-            <div className="reason" style={{ marginTop: 8 }}>
-              {mech.note}
-            </div>
           </div>
         ))}
       </div>

@@ -1,9 +1,14 @@
-import type { HqVisit, SalesSlice, Store, TimeRange } from "../types";
+import type { HqVisit, Radius, SalesSlice, Store, TimeRange } from "../types";
 
 export const TIME_RANGES: { id: TimeRange; label: string }[] = [
   { id: "d1", label: "昨天" },
   { id: "d7", label: "近 7 天" },
   { id: "d30", label: "近 30 天" },
+];
+
+export const RADIUS_OPTIONS: { id: Radius; label: string }[] = [
+  { id: "r1", label: "1KM" },
+  { id: "r3", label: "3KM" },
 ];
 
 export const ADVICE_KIND_LABEL: Record<string, string> = {
@@ -13,12 +18,8 @@ export const ADVICE_KIND_LABEL: Record<string, string> = {
   season: "季节",
 };
 
-function slice(
-  platforms: SalesSlice["platforms"],
-  topSkus: SalesSlice["topSkus"],
-  mechanisms: SalesSlice["mechanisms"],
-): SalesSlice {
-  return { platforms, topSkus, mechanisms };
+function slice(topSkus: SalesSlice["topSkus"], campaigns: SalesSlice["campaigns"]): SalesSlice {
+  return { topSkus, campaigns };
 }
 
 /** 样例来源：docs/sample-data/永辉门店标签_*.csv + 字段说明。近 30 天为实数口径，昨/7天按峰值比例推算便于演示切换。 */
@@ -35,6 +36,7 @@ export const STORES: Store[] = [
     address: "江南大道8号万达广场AB区UG层",
     tags: ["CBD 核心", "地铁紧邻", "高校", "景区", "成熟社区"],
     platformsCovered: ["到家-淘宝闪购"],
+    platformsUncovered: ["京东秒送", "美团闪购"],
     peakWeekday: "下午 14:00-17:59",
     peakWeekend: "下午 14:00-17:59",
     dataDate: "2026-08-31",
@@ -45,45 +47,15 @@ export const STORES: Store[] = [
     bestMechHome: "商品满减券",
     nearby: "CBD 核心 · 地铁紧邻 · 高校 · 景区",
     nearbyDetail: "周边画像：CBD 核心、地铁紧邻，兼有高校与景区客流。",
-    pois: [
-      { kind: "商圈", name: "南岸万达广场", distance: "店内" },
-      { kind: "地铁", name: "地铁紧邻", distance: "已覆盖" },
-      { kind: "高校", name: "周边高校", distance: "已覆盖" },
-      { kind: "景区", name: "周边景区", distance: "已覆盖" },
-      { kind: "社区", name: "成熟社区", distance: "已覆盖" },
-      { kind: "医院", name: "周边医疗", distance: "已覆盖" },
+    poiCounts: [
+      { key: "community", label: "社区数", r1: 6, r3: 21 },
+      { key: "hospital", label: "医院数", r1: 2, r3: 7 },
+      { key: "school", label: "学校数", r1: 4, r3: 15 },
+      { key: "mall", label: "商业中心数", r1: 3, r3: 8 },
+      { key: "hypermarket", label: "同类商超数", r1: 2, r3: 9 },
     ],
     slices: {
       d30: slice(
-        [
-          {
-            id: "elm",
-            name: "淘宝闪购",
-            capability: true,
-            orders: "有活动订单",
-            gmv: "到家在投",
-            subsidy: "ROI 5.87",
-            note: "近 90 天到家能力标签为「是」，本店覆盖平台数 1",
-          },
-          {
-            id: "jd",
-            name: "京东秒送",
-            capability: false,
-            orders: "—",
-            gmv: "—",
-            subsidy: "—",
-            note: "近 90 天到家能力标签为「否」",
-          },
-          {
-            id: "mt",
-            name: "美团闪购",
-            capability: false,
-            orders: "—",
-            gmv: "—",
-            subsidy: "—",
-            note: "近 90 天到家能力标签为「否」",
-          },
-        ],
         [
           {
             rank: 1,
@@ -95,7 +67,7 @@ export const STORES: Store[] = [
           },
           {
             rank: 2,
-            name: "abc纤薄棉柔表层日用240mm卫生巾12片/包",
+            name: "abc 纤薄棉柔日用 240mm 卫生巾 12 片",
             sku: "销量 TOP",
             upc: "6923567600497",
             sales: "近 30 天件次最高",
@@ -103,47 +75,23 @@ export const STORES: Store[] = [
         ],
         [
           {
+            id: "c30-1",
             name: "商品满减券",
-            gmvShare: "到家最优机制",
-            subsidyShare: "ROI 5.87",
-            days: "近 30 天 · 高峰下午 14:00-17:59",
+            platform: "淘宝闪购",
+            gmv: "¥6,180",
+            subsidy: "¥1,050",
+            roi: "5.87",
+            days: "近 30 天在投 30 天",
             status: "good",
-            note: "本店到店订单标签为「否」、到家订单为「是」，到店 ROI 无值，属于纯到家门店。",
+            note: "本店到家最优机制。到店订单标签为「否」，属于纯到家门店，不要推荐到店券。",
           },
         ],
       ),
       d7: slice(
         [
           {
-            id: "elm",
-            name: "淘宝闪购",
-            capability: true,
-            orders: "周活跃",
-            gmv: "周峰值在下午档",
-            subsidy: "ROI 约 5.9",
-            note: "由近 30 天实数按高峰推算",
-          },
-          {
-            id: "jd",
-            name: "京东秒送",
-            capability: false,
-            orders: "—",
-            gmv: "—",
-            subsidy: "—",
-          },
-          {
-            id: "mt",
-            name: "美团闪购",
-            capability: false,
-            orders: "—",
-            gmv: "—",
-            subsidy: "—",
-          },
-        ],
-        [
-          {
             rank: 1,
-            name: "abc纤薄棉柔表层日用240mm卫生巾12片/包",
+            name: "abc 纤薄棉柔日用 240mm 卫生巾 12 片",
             sku: "销量 TOP",
             upc: "6923567600497",
             sales: "周动销靠前",
@@ -151,43 +99,19 @@ export const STORES: Store[] = [
         ],
         [
           {
+            id: "c7-1",
             name: "商品满减券",
-            gmvShare: "到家最优",
-            subsidyShare: "ROI 健康",
-            days: "近 7 天仍在投",
+            platform: "淘宝闪购",
+            gmv: "¥1,460",
+            subsidy: "¥248",
+            roi: "5.89",
+            days: "近 7 天在投 7 天",
             status: "good",
-            note: "高频品牌：嘉士伯、海天、康师傅、伊利低温",
+            note: "周峰值集中在下午档，高频品牌为嘉士伯、海天、康师傅、伊利低温。",
           },
         ],
       ),
       d1: slice(
-        [
-          {
-            id: "elm",
-            name: "淘宝闪购",
-            capability: true,
-            orders: "昨日有单",
-            gmv: "笔单价参考 ¥21.06",
-            subsidy: "满减承接",
-            note: "工作日/周末高峰均为下午 14:00-17:59",
-          },
-          {
-            id: "jd",
-            name: "京东秒送",
-            capability: false,
-            orders: "—",
-            gmv: "—",
-            subsidy: "—",
-          },
-          {
-            id: "mt",
-            name: "美团闪购",
-            capability: false,
-            orders: "—",
-            gmv: "—",
-            subsidy: "—",
-          },
-        ],
         [
           {
             rank: 1,
@@ -199,12 +123,15 @@ export const STORES: Store[] = [
         ],
         [
           {
+            id: "c1-1",
             name: "商品满减券",
-            gmvShare: "主机制",
-            subsidyShare: "ROI 5.87",
+            platform: "淘宝闪购",
+            gmv: "¥212",
+            subsidy: "¥36",
+            roi: "5.88",
             days: "昨日在投",
             status: "good",
-            note: "单平台店，不要假装有微信到店券核销",
+            note: "笔单价参考 ¥21.06，工作日与周末高峰均为下午 14:00-17:59。",
           },
         ],
       ),
@@ -288,6 +215,7 @@ export const STORES: Store[] = [
     address: "黄沙大道8号第2层212号商铺",
     tags: ["商圈", "成熟社区", "CBD", "地铁", "学校"],
     platformsCovered: ["到家-淘宝闪购"],
+    platformsUncovered: ["京东秒送", "美团闪购"],
     peakWeekday: "下午 14:00-17:59",
     peakWeekend: "晚间 18:00-22:59",
     dataDate: "2026-08-31",
@@ -298,42 +226,15 @@ export const STORES: Store[] = [
     bestMechHome: "商品满减券",
     nearby: "商圈 · 成熟社区 · CBD · 地铁 · 学校",
     nearbyDetail: "周边画像：黄沙商圈叠加成熟社区与学校，到家 ROI 高于同批样例中位数。",
-    pois: [
-      { kind: "商圈", name: "西城都荟 / 黄沙", distance: "店内" },
-      { kind: "地铁", name: "地铁覆盖", distance: "已覆盖" },
-      { kind: "学校", name: "周边学校", distance: "已覆盖" },
-      { kind: "社区", name: "成熟社区", distance: "已覆盖" },
-      { kind: "CBD", name: "CBD", distance: "已覆盖" },
+    poiCounts: [
+      { key: "community", label: "社区数", r1: 9, r3: 34 },
+      { key: "hospital", label: "医院数", r1: 1, r3: 6 },
+      { key: "school", label: "学校数", r1: 5, r3: 18 },
+      { key: "mall", label: "商业中心数", r1: 2, r3: 7 },
+      { key: "hypermarket", label: "同类商超数", r1: 3, r3: 12 },
     ],
     slices: {
       d30: slice(
-        [
-          {
-            id: "elm",
-            name: "淘宝闪购",
-            capability: true,
-            orders: "有活动订单",
-            gmv: "到家在投",
-            subsidy: "ROI 8.15",
-            note: "笔单价 ¥33.80 · 在售 SKU 338",
-          },
-          {
-            id: "jd",
-            name: "京东秒送",
-            capability: false,
-            orders: "—",
-            gmv: "—",
-            subsidy: "—",
-          },
-          {
-            id: "mt",
-            name: "美团闪购",
-            capability: false,
-            orders: "—",
-            gmv: "—",
-            subsidy: "—",
-          },
-        ],
         [
           {
             rank: 1,
@@ -345,7 +246,7 @@ export const STORES: Store[] = [
           },
           {
             rank: 2,
-            name: "ABC K53亲柔立围棉柔迷你卫生巾8片[8片]",
+            name: "ABC K53 亲柔立围棉柔迷你卫生巾 8 片",
             sku: "销量 TOP",
             upc: "6922731882516",
             sales: "近 30 天件次最高",
@@ -353,32 +254,23 @@ export const STORES: Store[] = [
         ],
         [
           {
+            id: "c30-1",
             name: "商品满减券",
-            gmvShare: "到家最优机制",
-            subsidyShare: "ROI 8.15",
-            days: "工作日下午 · 周末晚高峰",
+            platform: "淘宝闪购",
+            gmv: "¥7,940",
+            subsidy: "¥970",
+            roi: "8.15",
+            days: "近 30 天在投 30 天",
             status: "good",
-            note: "同批样例中 ROI 偏高，机制健康，优先扩量而非停投。",
+            note: "同批样例中 ROI 偏高，机制健康，优先扩量而非停投。在售 SKU 338，笔单价 ¥33.80。",
           },
         ],
       ),
       d7: slice(
         [
           {
-            id: "elm",
-            name: "淘宝闪购",
-            capability: true,
-            orders: "周活跃",
-            gmv: "周末晚高峰更高",
-            subsidy: "ROI 高位",
-          },
-          { id: "jd", name: "京东秒送", capability: false, orders: "—", gmv: "—", subsidy: "—" },
-          { id: "mt", name: "美团闪购", capability: false, orders: "—", gmv: "—", subsidy: "—" },
-        ],
-        [
-          {
             rank: 1,
-            name: "ABC K53亲柔立围棉柔迷你卫生巾8片",
+            name: "ABC K53 亲柔立围棉柔迷你卫生巾 8 片",
             sku: "销量 TOP",
             upc: "6922731882516",
             sales: "周动销靠前",
@@ -386,28 +278,19 @@ export const STORES: Store[] = [
         ],
         [
           {
+            id: "c7-1",
             name: "商品满减券",
-            gmvShare: "主机制",
-            subsidyShare: "ROI 8.15",
-            days: "近 7 天",
+            platform: "淘宝闪购",
+            gmv: "¥1,870",
+            subsidy: "¥228",
+            roi: "8.20",
+            days: "近 7 天在投 7 天",
             status: "good",
-            note: "品牌面宽：太粮/伊利/康师傅/海天等 TOP10 齐全",
+            note: "品牌面宽，太粮、伊利、康师傅、海天等 TOP10 齐全。",
           },
         ],
       ),
       d1: slice(
-        [
-          {
-            id: "elm",
-            name: "淘宝闪购",
-            capability: true,
-            orders: "昨日有单",
-            gmv: "笔单价参考 ¥33.80",
-            subsidy: "满减",
-          },
-          { id: "jd", name: "京东秒送", capability: false, orders: "—", gmv: "—", subsidy: "—" },
-          { id: "mt", name: "美团闪购", capability: false, orders: "—", gmv: "—", subsidy: "—" },
-        ],
         [
           {
             rank: 1,
@@ -420,12 +303,15 @@ export const STORES: Store[] = [
         ],
         [
           {
+            id: "c1-1",
             name: "商品满减券",
-            gmvShare: "主机制",
-            subsidyShare: "ROI 优",
-            days: "昨日",
+            platform: "淘宝闪购",
+            gmv: "¥286",
+            subsidy: "¥35",
+            roi: "8.17",
+            days: "昨日在投",
             status: "good",
-            note: "周末高峰转晚间 18:00-22:59，与工作日下午不同",
+            note: "周末高峰转晚间 18:00-22:59，与工作日下午档不同，预算需分时拆。",
           },
         ],
       ),
@@ -491,6 +377,7 @@ export const STORES: Store[] = [
     address: "小寨西路232号MOMOPARK负1层",
     tags: ["商圈", "成熟社区", "CBD", "地铁", "学校"],
     platformsCovered: ["到家-京东秒送"],
+    platformsUncovered: ["淘宝闪购", "美团闪购"],
     peakWeekday: "晚间 18:00-22:59",
     peakWeekend: "晚间 18:00-22:59",
     dataDate: "2026-08-31",
@@ -501,52 +388,26 @@ export const STORES: Store[] = [
     bestMechHome: "优惠券",
     nearby: "商圈 · 成熟社区 · CBD · 地铁 · 学校",
     nearbyDetail: "周边画像：小寨商圈 MOMOPARK，地铁与学校叠加，主平台为京东秒送。",
-    pois: [
-      { kind: "商圈", name: "小寨 / MOMOPARK", distance: "店内" },
-      { kind: "地铁", name: "地铁覆盖", distance: "已覆盖" },
-      { kind: "学校", name: "周边学校/高校", distance: "已覆盖" },
-      { kind: "社区", name: "成熟社区", distance: "已覆盖" },
+    poiCounts: [
+      { key: "community", label: "社区数", r1: 11, r3: 38 },
+      { key: "hospital", label: "医院数", r1: 3, r3: 11 },
+      { key: "school", label: "学校数", r1: 7, r3: 24 },
+      { key: "mall", label: "商业中心数", r1: 4, r3: 10 },
+      { key: "hypermarket", label: "同类商超数", r1: 4, r3: 14 },
     ],
     slices: {
       d30: slice(
         [
           {
-            id: "jd",
-            name: "京东秒送",
-            capability: true,
-            orders: "有活动订单",
-            gmv: "到家在投",
-            subsidy: "ROI 6.84",
-            note: "本店覆盖平台列表仅「到家-京东」",
-          },
-          {
-            id: "elm",
-            name: "淘宝闪购",
-            capability: false,
-            orders: "—",
-            gmv: "—",
-            subsidy: "—",
-          },
-          {
-            id: "mt",
-            name: "美团闪购",
-            capability: false,
-            orders: "—",
-            gmv: "—",
-            subsidy: "—",
-          },
-        ],
-        [
-          {
             rank: 1,
-            name: "海天永辉定制&油趣工坊有机山茶油1L",
+            name: "海天永辉定制 & 油趣工坊有机山茶油 1L",
             sku: "销售额 TOP",
             upc: "6977168342348",
-            sales: "¥178.00",
+            sales: "近 30 天 ¥178.00",
           },
           {
             rank: 2,
-            name: "金典鲜牛奶450ml",
+            name: "金典鲜牛奶 450ml",
             sku: "销量 TOP",
             upc: "6907992106601",
             sales: "近 30 天件次最高",
@@ -554,32 +415,23 @@ export const STORES: Store[] = [
         ],
         [
           {
+            id: "c30-1",
             name: "优惠券",
-            gmvShare: "到家最优机制",
-            subsidyShare: "ROI 6.84",
-            days: "工作日/周末均为晚间 18:00-22:59",
+            platform: "京东秒送",
+            gmv: "¥4,300",
+            subsidy: "¥840",
+            roi: "6.84",
+            days: "近 30 天在投 30 天",
             status: "good",
-            note: "与万达店「商品满减券」不同，本店京东侧最优是优惠券。",
+            note: "与万达店「商品满减券」不同，本店京东侧最优机制是优惠券，话术不能照搬。",
           },
         ],
       ),
       d7: slice(
         [
           {
-            id: "jd",
-            name: "京东秒送",
-            capability: true,
-            orders: "晚高峰集中",
-            gmv: "周活跃",
-            subsidy: "ROI 约 6.8",
-          },
-          { id: "elm", name: "淘宝闪购", capability: false, orders: "—", gmv: "—", subsidy: "—" },
-          { id: "mt", name: "美团闪购", capability: false, orders: "—", gmv: "—", subsidy: "—" },
-        ],
-        [
-          {
             rank: 1,
-            name: "金典鲜牛奶450ml",
+            name: "金典鲜牛奶 450ml",
             sku: "销量 TOP",
             upc: "6907992106601",
             sales: "晚高峰动销",
@@ -587,45 +439,39 @@ export const STORES: Store[] = [
         ],
         [
           {
+            id: "c7-1",
             name: "优惠券",
-            gmvShare: "主机制",
-            subsidyShare: "ROI 6.84",
-            days: "近 7 天",
+            platform: "京东秒送",
+            gmv: "¥1,020",
+            subsidy: "¥198",
+            roi: "6.86",
+            days: "近 7 天在投 7 天",
             status: "good",
-            note: "品牌：海天、伊利、太粮、康师傅等",
+            note: "GMV 集中在晚间 18:00-22:59，主要品牌为海天、伊利、太粮、康师傅。",
           },
         ],
       ),
       d1: slice(
         [
           {
-            id: "jd",
-            name: "京东秒送",
-            capability: true,
-            orders: "昨日晚高峰",
-            gmv: "笔单价参考 ¥19.74",
-            subsidy: "优惠券",
-          },
-          { id: "elm", name: "淘宝闪购", capability: false, orders: "—", gmv: "—", subsidy: "—" },
-          { id: "mt", name: "美团闪购", capability: false, orders: "—", gmv: "—", subsidy: "—" },
-        ],
-        [
-          {
             rank: 1,
-            name: "海天永辉定制有机山茶油1L",
+            name: "海天永辉定制 & 油趣工坊有机山茶油 1L",
             sku: "销售额 TOP",
             upc: "6977168342348",
-            sales: "¥178.00/30天",
+            sales: "近 30 天 ¥178.00",
           },
         ],
         [
           {
+            id: "c1-1",
             name: "优惠券",
-            gmvShare: "主机制",
-            subsidyShare: "ROI 健康",
-            days: "昨日",
+            platform: "京东秒送",
+            gmv: "¥148",
+            subsidy: "¥29",
+            roi: "6.83",
+            days: "昨日在投",
             status: "good",
-            note: "不要套用淘宝满减话术，本店机制名是优惠券",
+            note: "笔单价参考 ¥19.74，晚高峰前需完成乳品与粮油补货沟通。",
           },
         ],
       ),

@@ -2,24 +2,33 @@ export type Role = "dsr" | "hq" | "guide";
 
 export type TimeRange = "d1" | "d7" | "d30";
 
+/** 渠道：到店 / 到家。永辉样例门店到店能力标签多为否，到店档会走空态。 */
+export type Channel = "instore" | "home";
+
 export type AdviceKind = "supply" | "mechanism" | "price" | "season";
 
 export type AdviceStatus = "pending" | "adopted" | "ignored";
 
-export type NearbyPoi = {
-  kind: string;
-  name: string;
-  distance: string;
+/** 周边半径：1KM / 3KM */
+export type Radius = "r1" | "r3";
+
+export type PoiCount = {
+  key: string;
+  label: string;
+  r1: number;
+  r3: number;
 };
 
-export type PlatformStat = {
+export type Campaign = {
   id: string;
   name: string;
-  capability: boolean;
-  orders: string;
+  platform: string;
   gmv: string;
   subsidy: string;
-  note?: string;
+  roi: string;
+  days: string;
+  status: "good" | "broken" | "poor";
+  note: string;
 };
 
 export type TopSku = {
@@ -32,19 +41,9 @@ export type TopSku = {
   note?: string;
 };
 
-export type Mechanism = {
-  name: string;
-  gmvShare: string;
-  subsidyShare: string;
-  days: string;
-  status: "good" | "broken" | "poor";
-  note: string;
-};
-
 export type SalesSlice = {
-  platforms: PlatformStat[];
   topSkus: TopSku[];
-  mechanisms: Mechanism[];
+  campaigns: Campaign[];
 };
 
 export type AiAdvice = {
@@ -69,6 +68,7 @@ export type Store = {
   address: string;
   tags: string[];
   platformsCovered: string[];
+  platformsUncovered: string[];
   peakWeekday: string;
   peakWeekend: string;
   dataDate: string;
@@ -79,7 +79,8 @@ export type Store = {
   bestMechHome: string;
   nearby: string;
   nearbyDetail: string;
-  pois: NearbyPoi[];
+  /** 1KM / 3KM 周边业态数量。有无沿用真实标签，数量为演示估算。 */
+  poiCounts: PoiCount[];
   slices: Record<TimeRange, SalesSlice>;
   advices: AiAdvice[];
   yesterdaySales: string;
@@ -119,4 +120,30 @@ export type HqVisit = {
   storeId: string;
   time: string;
   action: string;
+};
+
+export type Account = {
+  name: string;
+  loginId: string;
+  role: string;
+  region: string;
+  dataDate: string;
+};
+
+export type ChannelSummary = {
+  visits: string;
+  gmv: string;
+  subsidy: string;
+  roi: string;
+  /** 该渠道没有可用事实时的说明，有值即走空态 */
+  emptyNote?: string;
+};
+
+export type VisitRecord = {
+  storeId: string;
+  time: string;
+  action: string;
+  gmv: string;
+  subsidy: string;
+  roi: string;
 };

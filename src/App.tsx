@@ -4,13 +4,17 @@ import { PhoneFrame, StatusBar } from "./components/PhoneFrame";
 import { CameraCapture } from "./screens/CameraCapture";
 import { DsrHome } from "./screens/DsrHome";
 import { GuideHome } from "./screens/GuideHome";
-import { RoleSelect } from "./screens/RoleSelect";
+import { Home } from "./screens/Home";
+import { Login } from "./screens/Login";
 import { SearchStore } from "./screens/SearchStore";
+import { StatsDetail } from "./screens/StatsDetail";
 import { AdviceResult, HqHome, StoreBoard } from "./screens/StoreBoard";
-import type { AdviceReport, AdviceStatus, Role } from "./types";
+import type { AdviceReport, AdviceStatus, Channel, Role } from "./types";
 
 type Screen =
-  | { name: "role" }
+  | { name: "login" }
+  | { name: "home" }
+  | { name: "stats" }
   | { name: "dsr-home" }
   | { name: "camera" }
   | { name: "search" }
@@ -26,8 +30,9 @@ function nowLabel() {
 }
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>({ name: "role" });
+  const [screen, setScreen] = useState<Screen>({ name: "login" });
   const [role, setRole] = useState<Role | null>(null);
+  const [channel, setChannel] = useState<Channel>("home");
   const [historyIds, setHistoryIds] = useState<string[]>(INITIAL_HISTORY_IDS);
   const [reports, setReports] = useState<AdviceReport[]>([]);
   const [generating, setGenerating] = useState(false);
@@ -89,14 +94,37 @@ export default function App() {
   return (
     <PhoneFrame>
       <StatusBar />
-      {screen.name === "role" && <RoleSelect onPick={goRole} />}
+      {screen.name === "login" && <Login onLogin={() => setScreen({ name: "home" })} />}
+      {screen.name === "home" && (
+        <Home
+          channel={channel}
+          onChannel={setChannel}
+          onPick={goRole}
+          onOpenDetail={() => setScreen({ name: "stats" })}
+          onLogout={() => {
+            setRole(null);
+            setScreen({ name: "login" });
+          }}
+        />
+      )}
+      {screen.name === "stats" && (
+        <StatsDetail
+          channel={channel}
+          onChannel={setChannel}
+          onBack={() => setScreen({ name: "home" })}
+          onOpenStore={(id) => {
+            setRole("dsr");
+            openStore(id);
+          }}
+        />
+      )}
       {screen.name === "dsr-home" && (
         <DsrHome
           historyIds={historyIds}
           onCapture={() => setScreen({ name: "camera" })}
           onSearch={() => setScreen({ name: "search" })}
           onOpenStore={openStore}
-          onSwitchRole={() => setScreen({ name: "role" })}
+          onSwitchRole={() => setScreen({ name: "home" })}
         />
       )}
       {screen.name === "camera" && (
@@ -130,11 +158,11 @@ export default function App() {
         <HqHome
           reports={reports}
           historyIds={historyIds}
-          onSwitchRole={() => setScreen({ name: "role" })}
+          onSwitchRole={() => setScreen({ name: "home" })}
           onOpenStore={openStore}
         />
       )}
-      {screen.name === "guide-home" && <GuideHome onSwitchRole={() => setScreen({ name: "role" })} />}
+      {screen.name === "guide-home" && <GuideHome onSwitchRole={() => setScreen({ name: "home" })} />}
     </PhoneFrame>
   );
 }
