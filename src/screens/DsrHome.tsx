@@ -18,7 +18,7 @@ export function DsrHome({
     <div className="screen">
       <div className="app-header">
         <div>
-          <div className="kicker">DSR · 高宇 · 海淀片区</div>
+          <div className="eyebrow cn">DSR · 高宇 · 重庆片区</div>
           <div className="brand" style={{ fontSize: 22, marginTop: 4 }}>
             StoreVerse
           </div>
@@ -30,7 +30,7 @@ export function DsrHome({
 
       <div className="live-row">
         <span className="live-pill"><i /> 定位已就绪</span>
-        <span className="live-pill">Connect 在线</span>
+        <span className="live-pill">归一门店库在线</span>
       </div>
 
       <button className="capture-cta" onClick={onCapture} style={{ marginTop: 16 }}>
@@ -63,11 +63,11 @@ export function DsrHome({
           const store = getStore(id);
           return (
             <button key={store.id} className="store-mini" onClick={() => onOpenStore(store.id)}>
-          <div className="store-dot">SV</div>
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="store-dot">SV</div>
+              <div>
                 <b>{store.name}</b>
                 <div className="muted">
-                  {store.city} · {store.opportunity.amount} · {store.platformsCovered[0]}
+                  {store.city} · 到家 ROI {store.roiHome} · {store.platformsCovered[0]}
                 </div>
               </div>
             </button>

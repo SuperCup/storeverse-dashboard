@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { IconBack } from "../icons";
 
-const STEPS = ["门头特征锁定", "匹配 StoreVerse 门店", "装载 30 天三平台事实"];
+const STEPS = ["门头特征锁定", "匹配 StoreVerse 归一门店", "装载近 30 天经营事实"];
 
 export function CameraCapture({
   onBack,
@@ -41,9 +41,14 @@ export function CameraCapture({
           <div className="doors" />
         </div>
         <div className="view-mask" />
-        <div className="corners" />
+        <div className="corners">
+          <i className="tl" />
+          <i className="tr" />
+          <i className="bl" />
+          <i className="br" />
+        </div>
         <div className="hud-chip" style={{ top: 16, left: 14 }}>
-          40.012°N 116.298°E
+          29.533°N 106.573°E
         </div>
         <div className="hud-chip" style={{ top: 16, right: 14 }}>
           ±8m
@@ -70,13 +75,15 @@ export function CameraCapture({
         )}
       </div>
       <div className="cam-bottom">
-        <button className="muted" style={{ color: "#8ea0b8" }} onClick={onBack}>
+        <button className="cam-side muted" onClick={onBack} disabled={scanning}>
           取消
         </button>
         <button className="shutter" onClick={() => setScanning(true)} aria-label="拍照" disabled={scanning}>
           <span />
         </button>
-        <div style={{ width: 48, textAlign: "right", fontSize: 12, color: "#9af4ff" }}>识店</div>
+        <div className="cam-side right" style={{ color: "#9af4ff" }}>
+          {scanning ? "识别中" : "识店"}
+        </div>
       </div>
     </div>
   );

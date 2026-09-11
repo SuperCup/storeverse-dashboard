@@ -1,9 +1,28 @@
 import { useEffect, useState } from "react";
 import { ADVICE_KIND_LABEL, HQ_SEED_VISITS, STORES, TIME_RANGES, getStore } from "../data/stores";
-import { IconBack } from "../icons";
+import { IconBack, IconCheck, IconClose } from "../icons";
 import type { AdviceReport, Store, TimeRange } from "../types";
 
 const GEN_STEPS = ["检查供给：有没有货", "检查动销：卖得好不好", "检查机制：投得对不对", "检查补贴：预算够不够"];
+
+const RANGE_NOTE: Record<TimeRange, string> = {
+  d1: "昨日口径 · 由近30天推算",
+  d7: "近 7 天口径 · 由近30天推算",
+  d30: "近 30 天 · 标签实数",
+};
+
+const ADVICE_KIND_TAG: Record<string, string> = {
+  supply: "tag forest",
+  mechanism: "tag accent",
+  price: "tag warn",
+  season: "tag",
+};
+
+const MECH_STATUS: Record<string, { label: string; cls: string }> = {
+  good: { label: "健康", cls: "tag forest" },
+  broken: { label: "断档", cls: "tag warn" },
+  poor: { label: "ROI 偏低", cls: "tag danger" },
+};
 
 function GeneratingPanel({ storeName }: { storeName: string }) {
   const [step, setStep] = useState(0);
@@ -33,7 +52,7 @@ function GeneratingPanel({ storeName }: { storeName: string }) {
           ))}
         </ol>
         <p className="muted" style={{ marginTop: 18 }}>
-          正在用 {storeName} 的周边标签、三平台销量和机制预算生成可采纳建议…
+          正在用 {storeName} 的周边标签、覆盖平台销量和机制口径生成可采纳建议…
         </p>
       </div>
     </div>
@@ -69,7 +88,7 @@ export function StoreBoard({
       </div>
 
       <div className="answer-hero">
-        <div className="eyebrow">
+        <div className="eyebrow cn">
           {store.retailer} · {store.businessType} · {store.city}
           {store.district}
         </div>
@@ -86,10 +105,12 @@ export function StoreBoard({
         </p>
         <p className="muted">{store.nearbyDetail}</p>
         <div className="live-row">
-          <span className="live-pill">
-            <i /> {store.platformsCovered.join(" / ")}
-          </span>
-          <span className="live-pill">sg {store.sgStoreId}</span>
+          {store.platformsCovered.map((platform) => (
+            <span className="live-pill" key={platform}>
+              <i /> {platform}
+            </span>
+          ))}
+          <span className="live-pill">sg_store_id {store.sgStoreId}</span>
         </div>
         <div className="metrics" style={{ marginTop: 12 }}>
           <div className="metric">
@@ -106,12 +127,12 @@ export function StoreBoard({
           </div>
           <div className="metric">
             <div className="muted">最优机制</div>
-            <b style={{ fontSize: 14 }}>{store.bestMechHome}</b>
+            <b className="text">{store.bestMechHome}</b>
           </div>
         </div>
         <div className="opp-band">
-          <div className="k">本店可行动空间</div>
-          <b>{store.opportunity.amount}</b>
+          <div className="k">本店抓手</div>
+          <b>{store.opportunity.headline}</b>
           <div className="muted">{store.opportunity.line}</div>
         </div>
       </div>
@@ -120,9 +141,12 @@ export function StoreBoard({
         <div className="h2" style={{ fontSize: 16 }}>
           周边 POI 标签
         </div>
-        <span className="muted">{store.nearby}</span>
+        <span className="muted">近 90 天</span>
       </div>
       <div className="card">
+        <div className="muted" style={{ marginBottom: 10 }}>
+          {store.nearby}
+        </div>
         {store.pois.map((poi) => (
           <div className="sku-line" key={`${poi.kind}-${poi.name}`}>
             <div>
@@ -143,27 +167,25 @@ export function StoreBoard({
         <div className="sku-line">
           <div>
             <b>工作日高峰</b>
-            <div className="muted">a11_peak_weekday</div>
+            <div className="muted">近 90 天工作日订单最集中的时段</div>
           </div>
           <span className="tag accent">{store.peakWeekday}</span>
         </div>
         <div className="sku-line">
           <div>
             <b>周末高峰</b>
-            <div className="muted">a12_peak_weekend</div>
+            <div className="muted">近 90 天周末订单最集中的时段</div>
           </div>
           <span className="tag accent">{store.peakWeekend}</span>
         </div>
-        <div className="muted" style={{ marginTop: 8 }}>
-          近90天高频品牌：{store.brands.join("、")}
-        </div>
+        <div className="empty-note">近 90 天高频活动品牌：{store.brands.join("、")}</div>
       </div>
 
       <div className="section-title">
         <div className="h2" style={{ fontSize: 16 }}>
           到家平台能力
         </div>
-        <span className="muted">近30天实数为主</span>
+        <span className="muted">{RANGE_NOTE[range]}</span>
       </div>
       <div className="tabs">
         {TIME_RANGES.map((item) => (
@@ -178,29 +200,31 @@ export function StoreBoard({
       </div>
       <div className="stack">
         {slice.platforms.map((platform) => (
-          <div className={`card plat ${platform.id}`} key={platform.id}>
+          <div className={`card plat ${platform.id}${platform.capability ? "" : " off"}`} key={platform.id}>
             <div className="row space">
               <b>{platform.name}</b>
               <span className={platform.capability ? "tag forest" : "tag"}>
                 {platform.capability ? "已覆盖" : "未覆盖"}
               </span>
             </div>
-            <div className="metrics" style={{ marginTop: 10 }}>
-              <div>
-                <div className="muted">订单</div>
-                <b style={{ fontSize: 14 }}>{platform.orders}</b>
-              </div>
-              <div>
-                <div className="muted">销售/补贴</div>
-                <b style={{ fontSize: 14 }}>
-                  {platform.gmv} · {platform.subsidy}
-                </b>
-              </div>
-            </div>
-            {platform.note && (
-              <div className="muted" style={{ marginTop: 8 }}>
-                {platform.note}
-              </div>
+            {platform.capability ? (
+              <>
+                <div className="metrics" style={{ marginTop: 10 }}>
+                  <div className="kv">
+                    <div className="k">订单表现</div>
+                    <span className="v">{platform.orders}</span>
+                  </div>
+                  <div className="kv">
+                    <div className="k">机制 / ROI</div>
+                    <span className="v">
+                      {platform.gmv} · {platform.subsidy}
+                    </span>
+                  </div>
+                </div>
+                {platform.note && <div className="empty-note">{platform.note}</div>}
+              </>
+            ) : (
+              <div className="empty-note">本店该平台到家能力标签为「否」，无可用经营事实。</div>
             )}
           </div>
         ))}
@@ -210,7 +234,7 @@ export function StoreBoard({
         <div className="h2" style={{ fontSize: 16 }}>
           Top SKU
         </div>
-        <span className="muted">69码 / 销售</span>
+        <span className="muted">按 69 码口径</span>
       </div>
       <div className="card">
         {slice.topSkus.map((sku) => (
@@ -220,10 +244,11 @@ export function StoreBoard({
                 {sku.rank}. {sku.name}
               </b>
               <div className="muted">
-                {sku.sku} · UPC {sku.upc} · {sku.sales}
+                69码 {sku.upc} · {sku.sales}
               </div>
+              {sku.note && <div className="muted">{sku.note}</div>}
             </div>
-            <span className={sku.note ? "tag warn" : "tag forest"}>{sku.note ?? "动销"}</span>
+            <span className="tag accent">{sku.sku}</span>
           </div>
         ))}
       </div>
@@ -238,13 +263,7 @@ export function StoreBoard({
           <div className="card" key={mech.name}>
             <div className="row space">
               <b>{mech.name}</b>
-              <span
-                className={
-                  mech.status === "good" ? "tag forest" : mech.status === "broken" ? "tag warn" : "tag danger"
-                }
-              >
-                {mech.status === "good" ? "健康" : mech.status === "broken" ? "断档" : "OI 差"}
-              </span>
+              <span className={MECH_STATUS[mech.status].cls}>{MECH_STATUS[mech.status].label}</span>
             </div>
             <p className="muted" style={{ marginTop: 6 }}>
               {mech.gmvShare} · {mech.subsidyShare}
@@ -285,7 +304,8 @@ export function StoreBoard({
       )}
 
       <div className="connect">
-        StoreVerse sg_store_id {store.sgStoreId} · 数据日期 {store.dataDate} · 不与客户门店后台拉通
+        StoreVerse 归一门店 <code>sg_store_id {store.sgStoreId}</code> · 数据日期 {store.dataDate} ·
+        本工具不与客户门店后台拉通
       </div>
       <div className="sticky-gen">
         <button className="gen-btn" onClick={onGenerate}>
@@ -335,16 +355,12 @@ export function AdviceResult({
           return (
             <div className="card advice" key={advice.id}>
               <div className="row space">
-                <span className={advice.kind === "supply" ? "tag forest" : advice.kind === "price" ? "tag warn" : "tag accent"}>
-                  {ADVICE_KIND_LABEL[advice.kind]}
-                </span>
+                <span className={ADVICE_KIND_TAG[advice.kind]}>{ADVICE_KIND_LABEL[advice.kind]}</span>
                 {status !== "pending" && (
                   <span className={status === "adopted" ? "tag forest" : "tag"}>{status === "adopted" ? "已采纳" : "已忽略"}</span>
                 )}
               </div>
-              <div className="h2" style={{ fontSize: 15 }}>
-                {advice.title}
-              </div>
+              <div className="advice-title">{advice.title}</div>
               <p className="instruction">{advice.instruction}</p>
               <div className="reason">判断链：{advice.chain}</div>
               <div className="reason">为什么：{advice.reason}</div>
@@ -354,10 +370,10 @@ export function AdviceResult({
               {status === "pending" && (
                 <div className="vote-row">
                   <button className="vote up" onClick={() => onSetStatus(advice.id, "adopted")}>
-                    采纳
+                    <IconCheck /> 采纳
                   </button>
                   <button className="vote down" onClick={() => onSetStatus(advice.id, "ignored")}>
-                    忽略
+                    <IconClose /> 忽略
                   </button>
                 </div>
               )}
@@ -450,7 +466,7 @@ export function HqHome({
           <b>{ignored}</b>
         </div>
         <div className="metric">
-          <div className="muted">本机会话门店</div>
+          <div className="muted">本次会话门店</div>
           <b>{historyIds.length}</b>
         </div>
         <div className="metric">
@@ -475,8 +491,8 @@ export function HqHome({
                   {visit.dsr} · {store.name}
                 </b>
                 <div className="muted">
-                  {visit.province}
-                  {visit.city} · {visit.time} · {visit.action}
+                  {visit.province === visit.city ? visit.city : `${visit.province}${visit.city}`} · {visit.time} ·{" "}
+                  {visit.action}
                 </div>
               </div>
             </button>
@@ -503,7 +519,7 @@ export function HqHome({
                 <div>
                   <b>{store.name}</b>
                   <div className="muted">
-                    {report.createdAt} · 采纳 {a} · 忽略 {i} · ROI {store.roiHome}
+                    {report.createdAt} 生成 · 采纳 {a} · 忽略 {i} · 到家 ROI {store.roiHome}
                   </div>
                 </div>
               </button>
@@ -526,7 +542,7 @@ export function HqHome({
               <b>{store.name}</b>
               <div className="muted">
                 {store.city}
-                {store.district} · {store.platformsCovered[0]} · sg {store.sgStoreId}
+                {store.district} · {store.platformsCovered[0]} · sg_store_id {store.sgStoreId}
               </div>
             </div>
           </button>

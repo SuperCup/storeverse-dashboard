@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 
-export function PhoneFrame({ children }: { children: ReactNode; dark?: boolean }) {
+export function PhoneFrame({ children }: { children: ReactNode }) {
   return (
     <div className="stage">
       <div className="phone">
@@ -22,9 +22,9 @@ export function StatusBar() {
     return () => window.clearInterval(id);
   }, []);
   return (
-    <div className="status-bar" style={{ color: "#d7f7ff" }}>
+    <div className="status-bar">
       <span>{time}</span>
-      <span className="live-pill" style={{ padding: "2px 8px" }}>
+      <span className="live-pill sm">
         <i /> LIVE
       </span>
     </div>

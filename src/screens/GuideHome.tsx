@@ -14,7 +14,14 @@ function Sparkline({ values }: { values: number[] }) {
     .join(" ");
   return (
     <svg className="spark" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none">
-      <polyline fill="none" stroke="#d24b16" strokeWidth="3" points={points} />
+      <polyline
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        points={points}
+      />
     </svg>
   );
 }
@@ -25,9 +32,9 @@ export function GuideHome({ onSwitchRole }: { onSwitchRole: () => void }) {
   return (
     <div className="screen">
       <div className="app-header">
-        <div>
-          <div className="eyebrow">导购 · 我的门店</div>
-          <div className="h2" style={{ fontSize: 18 }}>
+        <div style={{ minWidth: 0 }}>
+          <div className="eyebrow cn">导购 · 我的门店</div>
+          <div className="h2" style={{ fontSize: 17, lineHeight: 1.35 }}>
             {store.name}
           </div>
         </div>
@@ -47,17 +54,13 @@ export function GuideHome({ onSwitchRole }: { onSwitchRole: () => void }) {
       <div className="stack">
         {store.guidePushes.map((push) => (
           <div className="push-card" key={push.id}>
-            <div className="label eyebrow" style={{ color: "#e7b39a" }}>
-              今日主推
-            </div>
-            <div className="h2" style={{ fontSize: 18, marginTop: 6 }}>
+            <div className="kicker">TODAY PUSH</div>
+            <div className="h2" style={{ fontSize: 17, marginTop: 6, lineHeight: 1.35 }}>
               {push.name}
             </div>
             <span className="coupon">{push.coupon}</span>
-            <p className="muted" style={{ color: "#d8cfc6" }}>
-              {push.script}
-            </p>
-            <div className="reason" style={{ marginTop: 10, background: "#3a2a24", color: "#e8d8cc" }}>
+            <p className="muted">{push.script}</p>
+            <div className="reason" style={{ marginTop: 10 }}>
               为什么：{push.reason}
             </div>
           </div>
@@ -68,14 +71,15 @@ export function GuideHome({ onSwitchRole }: { onSwitchRole: () => void }) {
         <div className="h2" style={{ fontSize: 16 }}>
           昨日销量
         </div>
+        <span className="muted">演示推算值</span>
       </div>
       <div className="card">
         <div className="row space">
           <b style={{ fontSize: 22 }}>{store.yesterdaySales}</b>
-          <span className={store.yesterdayUp ? "up" : "down"}>{store.yesterdayDelta}</span>
+          <span className="tag">{store.yesterdayDelta}</span>
         </div>
         <Sparkline values={store.weekTrend} />
-        <div className="muted">近 7 日到店+到家合计趋势</div>
+        <div className="muted">近 7 日到家销量趋势</div>
       </div>
 
       <div className="section-title">
@@ -91,10 +95,10 @@ export function GuideHome({ onSwitchRole }: { onSwitchRole: () => void }) {
                 {sku.rank}. {sku.name}
               </b>
               <div className="muted">
-                {sku.sku} · {sku.sales}
+                69码 {sku.sku} · {sku.sales}
               </div>
             </div>
-            <span className={sku.lift.includes("断货") ? "tag danger" : "tag forest"}>{sku.lift}</span>
+            <span className="tag accent">{sku.lift}</span>
           </div>
         ))}
       </div>
@@ -109,12 +113,14 @@ export function GuideHome({ onSwitchRole }: { onSwitchRole: () => void }) {
         <div className="h2" style={{ fontSize: 16, margin: "8px 0 6px" }}>
           {store.campaign.name}
         </div>
-        <p>{store.campaign.effect}</p>
+        <p style={{ fontSize: 14 }}>{store.campaign.effect}</p>
         <p className="muted" style={{ marginTop: 6 }}>
           {store.campaign.vsPlan}。{store.campaign.hint}
         </p>
       </div>
-      <div className="connect">已绑定 Connect ID {store.connectId}</div>
+      <div className="connect">
+        已绑定 StoreVerse 归一门店 <code>sg_store_id {store.sgStoreId}</code> · 数据日期 {store.dataDate}
+      </div>
     </div>
   );
 }

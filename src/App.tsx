@@ -83,12 +83,11 @@ export default function App() {
     else setScreen({ name: "dsr-home" });
   };
 
-  const dark = screen.name === "camera";
   const currentReport =
     screen.name === "advice" ? reports.find((item) => item.id === screen.reportId) : undefined;
 
   return (
-    <PhoneFrame dark={dark}>
+    <PhoneFrame>
       <StatusBar />
       {screen.name === "role" && <RoleSelect onPick={goRole} />}
       {screen.name === "dsr-home" && (

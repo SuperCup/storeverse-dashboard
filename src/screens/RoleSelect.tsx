@@ -11,11 +11,11 @@ export function RoleSelect({ onPick }: { onPick: (role: Role) => void }) {
           <br />
           10 秒读懂这家店该怎么做
         </h1>
-        <p className="muted">把三平台订单、补贴和周边标签变成可采纳的运营动作。一线当场用，总部只看采纳。</p>
+        <p className="muted">把到家订单、机制补贴和周边标签变成可采纳的运营动作。一线当场用，总部只看采纳。</p>
         <div className="sell-grid">
           <div>
-            <b>3 平台</b>
-            <span className="muted">微信 / 京东到家 / 美团</span>
+            <b>到家 3 平台</b>
+            <span className="muted">淘宝闪购 / 京东秒送 / 美团闪购</span>
           </div>
           <div>
             <b>1 条判断链</b>

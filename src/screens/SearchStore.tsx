@@ -32,6 +32,7 @@ export function SearchStore({
             <IconBack /> 返回
           </span>
         </button>
+        <span className="chip">手动找店</span>
       </div>
       <h1 className="h1" style={{ fontSize: 24 }}>
         手动找店
@@ -45,6 +46,11 @@ export function SearchStore({
         value={q}
         onChange={(e) => setQ(e.target.value)}
       />
+      {list.length === 0 && (
+        <p className="empty-note" style={{ marginTop: 16 }}>
+          没有匹配的归一门店。可试试「南岸」「西城」「小寨」或 sg_store_id。
+        </p>
+      )}
       <div className="stack" style={{ marginTop: 14 }}>
         {list.map((store) => (
           <button key={store.id} className="store-mini" onClick={() => onOpenStore(store.id)}>
@@ -53,7 +59,7 @@ export function SearchStore({
               <b>{store.name}</b>
               <div className="muted">
                 {store.city}
-                {store.district} · {store.platformsCovered[0]} · sg {store.sgStoreId}
+                {store.district} · {store.platformsCovered[0]} · sg_store_id {store.sgStoreId}
               </div>
             </div>
           </button>

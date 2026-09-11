@@ -19,19 +19,16 @@ export type PlatformStat = {
   orders: string;
   gmv: string;
   subsidy: string;
-  delta: string;
-  up: boolean;
   note?: string;
 };
 
 export type TopSku = {
   rank: number;
   name: string;
+  /** 口径标签，例如「销量 TOP」「销售额 TOP」 */
   sku: string;
   upc: string;
-  price: string;
   sales: string;
-  subsidy: string;
   note?: string;
 };
 
@@ -69,9 +66,7 @@ export type Store = {
   province: string;
   city: string;
   district: string;
-  connectId: string;
   address: string;
-  type: string;
   tags: string[];
   platformsCovered: string[];
   peakWeekday: string;
@@ -89,7 +84,6 @@ export type Store = {
   advices: AiAdvice[];
   yesterdaySales: string;
   yesterdayDelta: string;
-  yesterdayUp: boolean;
   weekTrend: number[];
   hotSkus: { rank: number; name: string; sku: string; sales: string; lift: string }[];
   campaign: {
@@ -99,7 +93,8 @@ export type Store = {
     vsPlan: string;
     hint: string;
   };
-  opportunity: { amount: string; line: string };
+  /** headline 是一句话抓手动作，line 是支撑它的事实口径 */
+  opportunity: { headline: string; line: string };
   guidePushes: {
     id: string;
     sku: string;
